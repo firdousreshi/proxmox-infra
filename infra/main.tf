@@ -1,7 +1,35 @@
 # Generate a random cluster token for k3s
 resource "random_id" "k3s_token" {
   byte_length = 35
+
 }
+
+variable "ciuser" {
+  description = "Username for cloud-init user"
+  type        = string
+  default     = "your_ci_user"
+}
+
+variable "vm_name" {
+  default = "k3s-db"
+}
+
+variable "vm_description" {
+  default = "Kubernetes MariaDB database"
+}
+
+variable "vm_cores" {
+  default = 1
+}
+
+variable "vm_memory" {
+  default = 1024
+}
+
+variable "vm_disk_size" {
+  default = "20G"
+}
+
 resource "random_password" "db_password" {
   length  = 16
   special = false
