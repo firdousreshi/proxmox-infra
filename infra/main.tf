@@ -219,18 +219,3 @@ resource "null_resource" "configure_dns_servers" {
   }
 }
 
-# Create a bucket
-resource "aws_s3_bucket" "k3s" {
-  bucket = "k3s"
-  acl    = "private" # or can be "public-read"
-  tags = {
-    Name = "Kubernetes cluster"
-  }
-  depends_on = [proxmox_vm_qemu.k3s-nodes]
-}
-# Upload the KUBECONFIG to s3
-resource "aws_s3_object" "kubeconfig" {
-  bucket = aws_s3_bucket.k3s.id
-  key    = "kubeconfig"
-  source = "./kubeconfig"
-}
