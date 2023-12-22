@@ -31,14 +31,14 @@ provider "proxmox" {
     _capturelog = ""
   }
 }
-provider "aws" {
-  s3_use_path_style           = true
-  skip_region_validation      = true
-  skip_credentials_validation = true
-  skip_requesting_account_id  = true
-  skip_metadata_api_check     = true
+#provider "aws" {
+#  s3_use_path_style           = true
+#  skip_region_validation      = true
+#  skip_credentials_validation = true
+#  skip_requesting_account_id  = true
+#  skip_metadata_api_check     = true
 
-  endpoints {
-    s3 = "https://s3-api.dsilva.dev"
-  }
-}
+#  endpoints {
+#    s3 = "https://s3-api.dsilva.dev"
+#  }
+#}
