@@ -7,87 +7,68 @@ resource "random_password" "db_password" {
   special = false
 }
 
-
-locals {
-  kubeconfig_path = "${path.module}/kubeconfig"
-  db_user         = "k3s"
-  db              = "kubernetes"
-  db_port         = 3306
-  db_password     = random_password.db_password.result
-}
-
-# Create the VM that will contain the database
 resource "proxmox_vm_qemu" "k3s-db" {
-  name        = "k3s-db"
-  desc        = "Kubernetes MariaDB database. User: ${local.db_user} | Password: ${local.db_password} | DB: ${local.db}"
+  name        = var.vm_name
+  desc        = var.vm_description
   target_node = "proxmox"
 
-  # Hardware configuration
   agent   = 1
   clone   = "ubuntu-server-jammy"
-  cores   = 1
-  memory  = 1024
+  cores   = var.vm_cores
+  memory  = var.vm_memory
   balloon = 512
   sockets = 1
   cpu     = "host"
+
   disk {
     storage = "local"
     type    = "virtio"
-    size    = "20G"
+    size    = var.vm_disk_size
   }
 
   os_type         = "cloud-init"
-  ipconfig0       = "ip=dhcp" # auto-assign a IP address for the machine
+  ipconfig0       = "ip=dhcp"
   nameserver      = "1.1.1.1"
   ciuser          = var.ciuser
   sshkeys         = file("~/.ssh/id_rsa.pub")
   ssh_user        = var.ciuser
   ssh_private_key = file("~/.ssh/id_rsa")
 
-  # Specify connection variables for remote execution
   connection {
     type        = "ssh"
-    host        = self.ssh_host # Auto-assigned ip address
+    host        = self.ssh_host
     user        = self.ssh_user
     private_key = self.ssh_private_key
     port        = self.ssh_port
     timeout     = "10m"
-
   }
 
   provisioner "remote-exec" {
-    inline = [<<EOF
-      sudo apt-get update
-      sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mariadb-server
-
-      # Start and enable MariaDB service
-      sudo systemctl start mariadb
-      sudo systemctl enable mariadb
-
-      # Set MariaDB root password
-      sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${local.db_password}'"
-
-      # Create a user and database
-      sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${local.db}"
-      sudo mysql -e "CREATE USER IF NOT EXISTS '${local.db_user}'@'localhost' IDENTIFIED BY '${local.db_password}'"
-      sudo mysql -e "GRANT ALL PRIVILEGES ON ${local.db}.* TO '${local.db_user}'@'localhost'"
-      sudo mysql -e "FLUSH PRIVILEGES"
-    EOF
-    ]
+    inline = [file("${path.module}/scripts/install_mariadb.sh")]
   }
-  # For some reason terraform has changes on reapply
-  # https://github.com/Telmate/terraform-provider-proxmox/issues/112
+
   lifecycle {
     ignore_changes = [
       network,
     ]
   }
+}
 
+data "template_file" "mariadb_install_script" {
+  template = file("${path.module}/scripts/install_mariadb.sh")
 }
 
 locals {
-  # Create the datastore endpoint for the cluster
+  kubeconfig_path    = "${path.module}/kubeconfig"
+  db_user            = "k3s"
+  db                = "kubernetes"
+  db_port           = 3306
+  db_password       = random_password.db_password.result
   datastore_endpoint = "mysql://${local.db_user}:${random_password.db_password.result}@tcp(${proxmox_vm_qemu.k3s-db.ssh_host}:${local.db_port})/${local.db}"
+}
+
+output "datastore_endpoint" {
+  value = local.datastore_endpoint
 }
 
 
