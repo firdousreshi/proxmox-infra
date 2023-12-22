@@ -60,7 +60,7 @@ resource "proxmox_vm_qemu" "k3s-db" {
   provisioner "remote-exec" {
     inline = [<<EOF
       sudo apt-get update
-      sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mariadb-server
+      sudo apt-get install -y mariadb-server
 
       # Start and enable MariaDB service
       sudo systemctl start mariadb
