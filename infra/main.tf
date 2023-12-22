@@ -29,7 +29,7 @@ resource "proxmox_vm_qemu" "k3s-db" {
   memory  = 1024
   balloon = 512
   sockets = 1
-  cpu     = "host"
+  cpu     = "qemu64"
   disk {
     storage = "local"
     type    = "virtio"
@@ -109,7 +109,7 @@ resource "proxmox_vm_qemu" "k3s-nodes" {
   memory  = var.memory
   balloon = 512
   sockets = 1
-  cpu     = "host"
+  cpu     = "qemu64"
   disk {
     storage = "local"
     type    = "virtio"
