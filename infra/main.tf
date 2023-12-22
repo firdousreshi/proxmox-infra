@@ -55,7 +55,7 @@ resource "proxmox_vm_qemu" "k3s-db" {
 
   }
 
-   provisioner "remote-exec" {
+  provisioner "remote-exec" {
     inline = [<<EOF
       sudo apt-get update
       sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mariadb-server
@@ -75,6 +75,15 @@ resource "proxmox_vm_qemu" "k3s-db" {
     EOF
     ]
   }
+  # For some reason terraform has changes on reapply
+  # https://github.com/Telmate/terraform-provider-proxmox/issues/112
+  lifecycle {
+    ignore_changes = [
+      network,
+    ]
+  }
+
+}
 
 locals {
   # Create the datastore endpoint for the cluster
