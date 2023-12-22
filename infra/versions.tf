@@ -1,10 +1,10 @@
 terraform {
-  backend "cloud" {
-    organization = "dsilva"
-    workspaces {
-      name = "k3s-kubernetes"
-    }
-  }
+  #backend "cloud" {
+    #organization = "dsilva"
+    #workspaces {
+      #name = "k3s-kubernetes"
+    #}
+  #}
   required_providers {
     # https://github.com/Telmate/terraform-provider-proxmox
     proxmox = {
