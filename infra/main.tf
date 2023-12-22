@@ -58,24 +58,24 @@ resource "proxmox_vm_qemu" "k3s-db" {
   }
 
   provisioner "remote-exec" {
-    inline = [<<EOF
+    # Run commands to install Docker and start MariaDB container
+    inline = <<-EOT
       sudo apt-get update
-      sudo apt-get install -y mariadb-server
+      sudo apt-get install -y docker.io
+      sudo systemctl start docker
+      sudo systemctl enable docker
 
-      # Start and enable MariaDB service
-      sudo systemctl start mariadb
-      sudo systemctl enable mariadb
-
-      # Set MariaDB root password
-      sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${local.db_password}'"
-
-      # Create a user and database
-      sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${local.db}"
-      sudo mysql -e "CREATE USER IF NOT EXISTS '${local.db_user}'@'localhost' IDENTIFIED BY '${local.db_password}'"
-      sudo mysql -e "GRANT ALL PRIVILEGES ON ${local.db}.* TO '${local.db_user}'@'localhost'"
-      sudo mysql -e "FLUSH PRIVILEGES"
-    EOF
-    ]
+      # Run the MariaDB Docker container
+      sudo docker run -d --name mariadb \
+          --restart always \
+          -v /opt/mysql/data:/var/lib/mysql \
+          --env MYSQL_USER=${local.db_user} \
+          --env MYSQL_PASSWORD=${local.db_password} \
+          --env MYSQL_ROOT_PASSWORD=${local.db_password} \
+          --env MYSQL_DATABASE=${local.db} \
+          -p ${local.db_port}:3306 \
+          mariadb:latest
+    EOT
   }
 
   lifecycle {
