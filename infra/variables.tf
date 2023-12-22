@@ -24,12 +24,12 @@ variable "k3s_version" {
 variable "disk_size" {
   description = "The disk size. E.g. '50G'"
   type        = string
-  default     = "30G"
+  default     = "128G"
 }
 variable "memory" {
   description = "The ammount of memory. E.g. '2048'"
   type        = number
-  default     = 3072
+  default     = 8192
 }
 variable "balloon" {
   description = <<EOF
@@ -42,7 +42,7 @@ variable "balloon" {
 variable "cores" {
   description = "The number of CPU cores of the VM"
   type        = number
-  default     = 4
+  default     = 2
 }
 # SSH configuration
 variable "ciuser" {
