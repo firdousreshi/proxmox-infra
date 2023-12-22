@@ -103,7 +103,7 @@ resource "proxmox_vm_qemu" "k3s-nodes" {
   target_node = "proxmox"
 
   # Hardware configuration
-  agent   = 0
+  agent   = 1
   clone   = "ubuntu-server-jammy"
   cores   = var.cores
   memory  = var.memory
