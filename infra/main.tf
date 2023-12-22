@@ -4,12 +4,6 @@ resource "random_id" "k3s_token" {
 
 }
 
-variable "ciuser" {
-  description = "Username for cloud-init user"
-  type        = string
-  default     = "your_ci_user"
-}
-
 variable "vm_name" {
   default = "k3s-db"
 }
