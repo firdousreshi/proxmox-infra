@@ -49,14 +49,14 @@ variable "ciuser" {
   description = "The name of the default user that should be created"
   type        = string
 }
-variable "ssh_keys" {
-  description = "The SSH key to add to the VM"
-  type        = string
-}
-variable "ssh_private_key" {
-  description = "The private SSH key for terraform to SSH into the machine"
-  sensitive   = true
-  type        = string
-}
+#variable "ssh_keys" {
+  #escription = "The SSH key to add to the VM"
+  #type        = string
+#}
+#variable "ssh_private_key" {
+  #description = "The private SSH key for terraform to SSH into the machine"
+  #sensitive   = true
+  #type        = string
+#}
 
 
