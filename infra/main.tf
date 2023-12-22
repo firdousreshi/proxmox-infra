@@ -59,14 +59,14 @@ resource "proxmox_vm_qemu" "k3s-db" {
 
   provisioner "remote-exec" {
     # Run commands to install Docker and start MariaDB container
-    inline = <<-EOT
-      sudo apt-get update
-      sudo apt-get install -y docker.io
-      sudo systemctl start docker
-      sudo systemctl enable docker
+    inline = [
+      "sudo apt-get update",
+      "sudo apt-get install -y docker.io",
+      "sudo systemctl start docker",
+      "sudo systemctl enable docker",
 
       # Run the MariaDB Docker container
-      sudo docker run -d --name mariadb \
+      "sudo docker run -d --name mariadb \
           --restart always \
           -v /opt/mysql/data:/var/lib/mysql \
           --env MYSQL_USER=${local.db_user} \
@@ -74,9 +74,8 @@ resource "proxmox_vm_qemu" "k3s-db" {
           --env MYSQL_ROOT_PASSWORD=${local.db_password} \
           --env MYSQL_DATABASE=${local.db} \
           -p ${local.db_port}:3306 \
-          mariadb:latest
-    EOT
-  }
+          mariadb:latest",
+    ]
 
   lifecycle {
     ignore_changes = [
