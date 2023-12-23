@@ -32,7 +32,7 @@ resource "proxmox_vm_qemu" "k3s-db" {
   cpu     = "qemu64"
   disk {
     storage = "local"
-    type    = "virtio0"
+    type    = "virtio"
     size    = "20G"
   }
 
@@ -104,7 +104,7 @@ resource "proxmox_vm_qemu" "k3s-nodes" {
   cpu     = "qemu64"
   disk {
     storage = "local"
-    type    = "virtio0"
+    type    = "virtio"
     size    = var.disk_size
   }
 
