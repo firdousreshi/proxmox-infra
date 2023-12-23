@@ -9,7 +9,7 @@ resource "random_password" "db_password" {
 
 
 locals {
-  kubeconfig_path = "./kubeconfig"
+  kubeconfig_path = "${path.module}/kubeconfig"
   db_user         = "k3s"
   db              = "kubernetes"
   db_port         = 3306
@@ -145,7 +145,8 @@ resource "proxmox_vm_qemu" "k3s-nodes" {
           --ssh-key privkey \
           --k3s-version ${var.k3s_version} \
           --datastore="${local.datastore_endpoint}" \
-          --token=${random_id.k3s_token.b64_std}
+          --token=${random_id.k3s_token.b64_std} \ 
+          --local-path="${local.kubeconfig_path}"
       else
         echo "Installing agent node"
         k3sup join --ip ${self.ssh_host} \
