@@ -139,7 +139,7 @@ resource "proxmox_vm_qemu" "k3s-nodes" {
       # The next nodes are just agent nodes for deploying workloads
       if [ "${count.index}" -lt 2 ]; then
         echo "Installing server node"
-        k3sup install --ip ${self.ssh_host} \
+        k3sup install --host ${self.ssh_host} \
           --k3s-extra-args "--disable local-storage" \
           --user ${self.ssh_user} \
           --ssh-key privkey \
@@ -158,7 +158,7 @@ resource "proxmox_vm_qemu" "k3s-nodes" {
       fi
 
       # Cleanup private key
-      rm privkey
+      #rm privkey
     EOT
   }
 
