@@ -55,29 +55,21 @@ resource "proxmox_vm_qemu" "k3s-db" {
 
   }
 
-provisioner "remote-exec" {
-  inline = [<<EOF
-    # Install Docker
-    sudo apt-get update
-    sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-    sudo apt-get update
-    sudo apt-get install -y docker-ce
-
-    # Start the database using Docker
-    sudo docker run -d --name mariadb \
-        --restart always \
-        -v /opt/mysql/data:/var/lib/mysql \
-        --env MYSQL_USER=${local.db_user} \
-        --env MYSQL_PASSWORD=${local.db_password} \
-        --env MYSQL_ROOT_PASSWORD=${local.db_password} \
-        --env MYSQL_DATABASE=${local.db} \
-        -p ${local.db_port}:3306 \
-        mariadb:latest
-  EOF
-  ]
-}
+  provisioner "remote-exec" {
+    # Start the database using docker
+    inline = [<<EOF
+      sudo docker run -d --name mariadb \
+          --restart always \
+          -v /opt/mysql/data:/var/lib/mysql \
+          --env MYSQL_USER=${local.db_user} \
+          --env MYSQL_PASSWORD=${local.db_password} \
+          --env MYSQL_ROOT_PASSWORD=${local.db_password} \
+          --env MYSQL_DATABASE=${local.db} \
+          -p ${local.db_port}:3306 \
+          mariadb:latest
+    EOF
+    ]
+  }
   # For some reason terraform has changes on reapply
   # https://github.com/Telmate/terraform-provider-proxmox/issues/112
   lifecycle {
