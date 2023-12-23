@@ -9,7 +9,7 @@ resource "random_password" "db_password" {
 
 
 locals {
-  kubeconfig_path = "${path.module}\kubeconfig"
+  kubeconfig_path = "./kubeconfig"
   db_user         = "k3s"
   db              = "kubernetes"
   db_port         = 3306
