@@ -5,3 +5,6 @@ output "kubeconfig_file_path" {
 output "server_ips" {
   value = proxmox_vm_qemu.k3s-nodes.*.ssh_host
 }
+output "datasource" {
+  value = locals.datastore_endpoint
+}
