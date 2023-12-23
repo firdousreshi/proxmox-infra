@@ -145,8 +145,7 @@ resource "proxmox_vm_qemu" "k3s-nodes" {
           --ssh-key privkey \
           --k3s-version ${var.k3s_version} \
           --datastore="${local.datastore_endpoint}" \
-          --token=${random_id.k3s_token.b64_std} \ 
-          --local-path="${local.kubeconfig_path}"
+          --token=${random_id.k3s_token.b64_std}
       else
         echo "Installing agent node"
         k3sup join --ip ${self.ssh_host} \
