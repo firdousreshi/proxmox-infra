@@ -13,7 +13,7 @@ variable "proxmox_api_url" {
 }
 variable "node_count" {
   description = "The number of the kubernetes cluster nodes (the first 2 will always be server nodes for High-Availability)."
-  default     = 5
+  default     = 2
 }
 variable "k3s_version" {
   description = "The version of k3s"
